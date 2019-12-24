@@ -18,22 +18,25 @@ script:
   - env GOOS=linux GOARCH=arm go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.linux.arm.bin
   - ./upx-3.95-amd64_linux/upx --brute SONAR_QYHOOK_NAME.linux.arm.bin
   - tar -cvJf SONAR_QYHOOK_NAME.linux.arm.tar.xz SONAR_QYHOOK_NAME.linux.arm.bin
+  - env GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.linux.arm64.bin
+  - ./upx-3.95-amd64_linux/upx --brute SONAR_QYHOOK_NAME.linux.arm64.bin
+  - tar -cvJf SONAR_QYHOOK_NAME.linux.arm64.tar.xz SONAR_QYHOOK_NAME.linux.arm64.bin
   - env GOOS=darwin GOARCH=386 go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.darwin.386.bin
   - ./upx-3.95-amd64_linux/upx --brute SONAR_QYHOOK_NAME.darwin.386.bin
   - tar -cvJf SONAR_QYHOOK_NAME.darwin.386.tar.xz SONAR_QYHOOK_NAME.darwin.386.bin
   - env GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.darwin.amd64.bin
   - ./upx-3.95-amd64_linux/upx --brute SONAR_QYHOOK_NAME.darwin.amd64.bin
   - tar -cvJf SONAR_QYHOOK_NAME.darwin.amd64.tar.xz SONAR_QYHOOK_NAME.darwin.amd64.bin
-  - env GOOS=freebsd GOARCH=386 go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.freebsd.386.bin
-  - ./upx-3.95-amd64_linux/upx --brute SONAR_QYHOOK_NAME.freebsd.386.bin
-  - tar -cvJf SONAR_QYHOOK_NAME.freebsd.386.tar.xz SONAR_QYHOOK_NAME.freebsd.386.bin
-  - env GOOS=freebsd GOARCH=amd64 go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.freebsd.amd64.bin
-  - ./upx-3.95-amd64_linux/upx --brute SONAR_QYHOOK_NAME.freebsd.amd64.bin
-  - tar -cvJf SONAR_QYHOOK_NAME.freebsd.amd64.tar.xz SONAR_QYHOOK_NAME.freebsd.amd64.bin
-  - env GOOS=windows GOARCH=386 go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.windows.386.bin
+  - env GOOS=darwin GOARCH=arm go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.darwin.arm.bin
+  - ./upx-3.95-amd64_linux/upx --brute SONAR_QYHOOK_NAME.darwin.arm.bin
+  - tar -cvJf SONAR_QYHOOK_NAME.darwin.arm.tar.xz SONAR_QYHOOK_NAME.darwin.arm.bin
+  - env GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.darwin.arm64.bin
+  - ./upx-3.95-amd64_linux/upx --brute SONAR_QYHOOK_NAME.darwin.arm64.bin
+  - tar -cvJf SONAR_QYHOOK_NAME.darwin.arm64.tar.xz SONAR_QYHOOK_NAME.darwin.arm64.bin
+  - env GOOS=windows GOARCH=386 go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.windows.386.exe
   - ./upx-3.95-amd64_linux/upx --brute SONAR_QYHOOK_NAME.windows.386.bin
   - tar -cvJf SONAR_QYHOOK_NAME.windows.386.tar.xz SONAR_QYHOOK_NAME.windows.386.bin
-  - env GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.windows.amd64.bin
+  - env GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o SONAR_QYHOOK_NAME.windows.amd64.exe
   - ./upx-3.95-amd64_linux/upx --brute SONAR_QYHOOK_NAME.windows.amd64.bin
   - tar -cvJf SONAR_QYHOOK_NAME.windows.amd64.tar.xz SONAR_QYHOOK_NAME.windows.amd64.bin
 deploy:
