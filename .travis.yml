@@ -6,9 +6,10 @@ go:
 before_script:
   - |
     if [ -z "$TRAVIS_TAG" ]; then
-      export TRAVIS_TAG="dev"
+      export SONAR_QYHOOK_NAME=sonar-qyhook-dev
+    else
+      export SONAR_QYHOOK_NAME=sonar-qyhook-$TRAVIS_TAG
     fi
-  - export SONAR_QYHOOK_NAME=sonar-qyhook-$TRAVIS_TAG
 script:
   - echo "building "$SONAR_QYHOOK_NAME" ..."
   - env GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o $SONAR_QYHOOK_NAME.linux.386.bin
