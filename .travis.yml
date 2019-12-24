@@ -1,6 +1,11 @@
+arch: amd64
+dist: trusty
 language: go
 go:
   - 1.12.x
+before_script:
+  - wget https://github.com/upx/upx/releases/download/v3.95/upx-3.95-amd64_linux.tar.xz
+  - tar -xvJf upx-3.95-amd64_linux.tar.xz
 script:
   - go build -ldflags="-s -w" -o sonar-qyhook.linux.bin
-  - upx --brute sonar-qyhook.linux.bin
+  - ./upx-3.95-amd64_linux/upx --brute sonar-qyhook.linux.bin
