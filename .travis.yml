@@ -34,6 +34,7 @@ deploy:
     secure: Sn/xZUTVFn6e4pHffTMBeJkVaacGWIzIhMsjWSmMocJ39Zwo/KNGHNARCD2s4J3xF9Snju8pW2xSYEfUogXhpTxJaSHM1ecb9b2h2jv+7nWV9SrSqRkglTuBM3M8+6e4ezUla3qvBhE1tB3pZyvVOjkCYEbdeLfxlLiyrMbQkuKvV/qEc/5uBB35Q44nYm86fQut8Vqun3RuHrNKCS2eR7CoDBSV+p5F1PcOX1IdZdYHR3ewGvvxJ61EqNtz2Y4jQD9bkSe8IliY3ewUW5nP2l6ckcqJcy3NkUJhCUBo/+EUpff2YALQE+wMzCLFIiHbFsfoSmuwS+xmfT2FVBFYNgZzM7hNFjpydGn6+Z7OUgOt0nzSwMYKoYvDU+i54IqesrauZALZ5Rt70rCBS9lTCaWbzlvBfqhYBup7Fapv40uKQ4lCzkR+dC7Ues+TEacp6Pex6xblzYJ8RPTpyOCDKDkaE1BrM8cHF+gek2lY8QNPo5wWzAeopRCmgtG+lZ3DH4OJZIbL+V9Pw8wvks655TItZIHSuve/nxGOntScchm9KEu3zWr4E0fyLtgHWxO+k1HlpNfTRUGFJaOQPTzj8CUV0KB2mzB9kUfMVKXKkOqCNxvmiO3Q3q1e4pIkwTXMe8cZdGWloPSLsrluxl8i/rIbY71rJBpawasa+e8SojY=
   file_glob: true
   file: $SONAR_QYHOOK_NAME.*.tar.xz
+  skip_cleanup: true
   on:
     repo: CharLemAznable/sonar-qyhook
     tags: true
