@@ -4,9 +4,10 @@ language: go
 go:
   - 1.12.x
 before_script:
-  - export SONAR_QYHOOK_VERSION=0.0.1
+  - export SONAR_QYHOOK_VERSION=$TRAVIS_TAG || "dev"
   - export SONAR_QYHOOK_NAME=sonar-qyhook-$SONAR_QYHOOK_VERSION
 script:
+  - echo "building "$SONAR_QYHOOK_NAME" ..."
   - env GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o $SONAR_QYHOOK_NAME.linux.386.bin
   - env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o $SONAR_QYHOOK_NAME.linux.amd64.bin
   - env GOOS=darwin GOARCH=386 go build -ldflags="-s -w" -o $SONAR_QYHOOK_NAME.darwin.386.bin
