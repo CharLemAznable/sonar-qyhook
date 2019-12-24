@@ -1,0 +1,6 @@
+language: go
+go:
+  - 1.12.x
+script:
+  - go build -ldflags="-s -w" -o sonar-qyhook.linux.bin
+  - upx --brute sonar-qyhook.linux.bin
