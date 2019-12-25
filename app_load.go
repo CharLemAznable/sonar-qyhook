@@ -22,6 +22,8 @@ var _configFile string
 var projectKeyRegexp *regexp.Regexp
 
 func init() {
+    gokits.LOG.LoadConfiguration("logback.xml")
+
     flag.StringVar(&_configFile, "configFile", "appConfig.toml", "config file path")
     flag.Parse()
 

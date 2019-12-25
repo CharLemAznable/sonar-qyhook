@@ -15,4 +15,5 @@
 .idea
 go.sum
 
-sonar-qyhook.linux.bin
+sonar-qyhook.bin
+sonar-qyhook.log

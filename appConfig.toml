@@ -1,2 +1,6 @@
 Port = 17258
 ContextPath = ""
+VarysBaseUrl = ""
+QyWxAgentId = ""
+QyWxMessageUrl = ""
+ProjectKeyPattern = ""
