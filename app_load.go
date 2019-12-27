@@ -4,6 +4,7 @@ import (
     "flag"
     "github.com/BurntSushi/toml"
     "github.com/CharLemAznable/gokits"
+    "github.com/CharLemAznable/varys-go-driver"
     "regexp"
     "strings"
 )
@@ -13,7 +14,6 @@ type AppConfig struct {
     ContextPath       string
     VarysBaseUrl      string
     QyWxAgentId       string
-    QyWxMessageUrl    string
     ProjectKeyPattern string
 }
 
@@ -40,14 +40,11 @@ func init() {
         gokits.If(strings.HasSuffix(appConfig.ContextPath, "/"),
             func() { appConfig.ContextPath = appConfig.ContextPath[:len(appConfig.ContextPath)-1] })
     })
-    gokits.If(0 == len(appConfig.VarysBaseUrl), func() {
-        appConfig.VarysBaseUrl = "http://127.0.0.1:4236/varys/query-wechat-corp-token/"
+    gokits.Unless(0 == len(appConfig.VarysBaseUrl), func() {
+        varys.ConfigInstance.Address = appConfig.VarysBaseUrl
     })
     gokits.If(0 == len(appConfig.QyWxAgentId), func() {
         gokits.LOG.Crashf("QyWxAgentId config REQUIRED")
-    })
-    gokits.If(0 == len(appConfig.QyWxMessageUrl), func() {
-        appConfig.QyWxMessageUrl = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token="
     })
     gokits.If(0 == len(appConfig.ProjectKeyPattern), func() {
         appConfig.ProjectKeyPattern = "^.*$"

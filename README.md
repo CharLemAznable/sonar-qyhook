@@ -15,8 +15,7 @@ SonarQube项目分析后回调Webhook服务, 将分析结果转发为企业微�
 Port = 17258
 ContextPath = ""
 VarysBaseUrl = ""       # varys服务地址
-QyWxAgentId = ""        # 企业微信应用ID
-QyWxMessageUrl = ""     # 企业微信发送消息服务地址
+QyWxAgentId = ""        # 企业微信应用ID, 即varys配置的企业应用codeName
 ProjectKeyPattern = ""  # 按正则匹配需要发送消息的Sonar项目名称
 ```
 
