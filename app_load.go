@@ -7,11 +7,11 @@ import (
     "github.com/CharLemAznable/varys-go-driver"
     "regexp"
     "strings"
+    "unsafe"
 )
 
 type AppConfig struct {
-    Port              int
-    ContextPath       string
+    gokits.HttpServerConfig
     VarysBaseUrl      string
     QyWxAgentId       string
     ProjectKeyPattern string
@@ -51,5 +51,6 @@ func init() {
     })
     projectKeyRegexp = regexp.MustCompile(appConfig.ProjectKeyPattern)
 
+    gokits.GlobalHttpServerConfig = (*gokits.HttpServerConfig)(unsafe.Pointer(&appConfig))
     gokits.LOG.Debug("appConfig: %s", gokits.Json(appConfig))
 }

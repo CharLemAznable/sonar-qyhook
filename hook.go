@@ -2,7 +2,6 @@ package main
 
 import (
     "github.com/CharLemAznable/gokits"
-    "io/ioutil"
     "net/http"
 )
 
@@ -56,8 +55,8 @@ func qyhook(writer http.ResponseWriter, request *http.Request) {
         gokits.ResponseText(writer, "Ignored")
         return
     }
-    bytes, _ := ioutil.ReadAll(request.Body)
-    payload, ok := gokits.UnJson(string(bytes),
+    body, _ := gokits.RequestBody(request)
+    payload, ok := gokits.UnJson(body,
         new(SonarPayload)).(*SonarPayload)
     if !ok || nil == payload {
         gokits.ResponseText(writer, "Request Illegal")
