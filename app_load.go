@@ -40,13 +40,13 @@ func init() {
         gokits.If(strings.HasSuffix(appConfig.ContextPath, "/"),
             func() { appConfig.ContextPath = appConfig.ContextPath[:len(appConfig.ContextPath)-1] })
     })
-    gokits.Unless(0 == len(appConfig.VarysBaseUrl), func() {
+    gokits.Unless("" == appConfig.VarysBaseUrl, func() {
         varys.ConfigInstance.Address = appConfig.VarysBaseUrl
     })
-    gokits.If(0 == len(appConfig.QyWxAgentId), func() {
+    gokits.If("" == appConfig.QyWxAgentId, func() {
         gokits.LOG.Crashf("QyWxAgentId config REQUIRED")
     })
-    gokits.If(0 == len(appConfig.ProjectKeyPattern), func() {
+    gokits.If("" == appConfig.ProjectKeyPattern, func() {
         appConfig.ProjectKeyPattern = "^.*$"
     })
     projectKeyRegexp = regexp.MustCompile(appConfig.ProjectKeyPattern)

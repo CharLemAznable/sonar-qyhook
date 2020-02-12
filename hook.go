@@ -1,8 +1,10 @@
 package main
 
 import (
+    "fmt"
     "github.com/CharLemAznable/gokits"
     "net/http"
+    "strconv"
 )
 
 type SonarPayload struct {
@@ -47,7 +49,7 @@ type SonarPayloadQualityGateCondition struct {
 
 func qyhook(writer http.ResponseWriter, request *http.Request) {
     projectKey := request.Header.Get(SonarProjectKeyHeaderName)
-    if 0 == len(projectKey) {
+    if "" == projectKey {
         gokits.ResponseText(writer, "Request Illegal")
         return
     }
@@ -118,12 +120,17 @@ func ratingValueAppender(title string, condition SonarPayloadQualityGateConditio
     if "NO_VALUE" == condition.Status {
         str += "<font color=\"comment\">-</font>"
     } else if "OK" == condition.Status {
-        str += "<font color=\"info\">" + condition.Value + "%</font>"
+        str += "<font color=\"info\">" + roundRatingValue(condition.Value) + "%</font>"
     } else {
-        str += "<font color=\"warning\">" + condition.Value + "%</font>"
+        str += "<font color=\"warning\">" + roundRatingValue(condition.Value) + "%</font>"
     }
     str += "\n"
     return str
+}
+
+func roundRatingValue(value string) string {
+    floatValue, _ := strconv.ParseFloat(value, 64)
+    return fmt.Sprintf("%.1f", floatValue)
 }
 
 func gradeAppender(title string, condition SonarPayloadQualityGateCondition) string {
