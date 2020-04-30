@@ -5,6 +5,8 @@ import (
     "github.com/BurntSushi/toml"
     "github.com/CharLemAznable/gokits"
     "github.com/CharLemAznable/varys-go-driver"
+    "net/http/httputil"
+    "net/url"
     "regexp"
     "strings"
     "unsafe"
@@ -15,11 +17,13 @@ type AppConfig struct {
     VarysBaseUrl      string
     QyWxAgentId       string
     ProjectKeyPattern string
+    ShieldsBadgeUrl   string
 }
 
 var appConfig AppConfig
 var _configFile string
 var projectKeyRegexp *regexp.Regexp
+var shieldsProxy *httputil.ReverseProxy
 
 func init() {
     gokits.LOG.LoadConfiguration("logback.xml")
@@ -50,6 +54,14 @@ func init() {
         appConfig.ProjectKeyPattern = "^.*$"
     })
     projectKeyRegexp = regexp.MustCompile(appConfig.ProjectKeyPattern)
+    gokits.If("" == appConfig.ShieldsBadgeUrl, func() {
+        appConfig.ShieldsBadgeUrl = "https://img.shields.io/static/v1"
+    })
+    badgeUrl, err := url.Parse(appConfig.ShieldsBadgeUrl)
+    if err != nil {
+        badgeUrl, _ = url.Parse("https://img.shields.io/static/v1")
+    }
+    shieldsProxy = gokits.ReverseProxy(badgeUrl)
 
     gokits.GlobalHttpServerConfig = (*gokits.HttpServerConfig)(unsafe.Pointer(&appConfig))
     gokits.LOG.Debug("appConfig: %s", gokits.Json(appConfig))

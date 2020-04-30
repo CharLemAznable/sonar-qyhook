@@ -17,3 +17,5 @@ go.sum
 
 sonar-qyhook.bin
 sonar-qyhook.log
+
+sonar.db

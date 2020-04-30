@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "github.com/CharLemAznable/gokits"
+    "go.etcd.io/bbolt"
     "net/http"
     "strconv"
 )
@@ -68,6 +69,13 @@ func qyhook(writer http.ResponseWriter, request *http.Request) {
     go func() {
         msg := buildMsg(projectKey, payload)
         sendQyMessage(msg)
+
+        _ = db.Update(func(tx *bbolt.Tx) error {
+            bucket := tx.Bucket([]byte(PayloadBucket))
+            branchName := payload.Branch.Name
+            return bucket.Put([]byte(projectKey+":"+branchName),
+                []byte(gokits.Json(payload)))
+        })
     }()
 
     gokits.ResponseText(writer, "OK")
@@ -120,9 +128,9 @@ func ratingValueAppender(title string, condition SonarPayloadQualityGateConditio
     if "NO_VALUE" == condition.Status {
         str += "<font color=\"comment\">-</font>"
     } else if "OK" == condition.Status {
-        str += "<font color=\"info\">" + roundRatingValue(condition.Value) + "%</font>"
+        str += "<font color=\"info\">" + roundRatingValue(condition.Value) + "</font>"
     } else {
-        str += "<font color=\"warning\">" + roundRatingValue(condition.Value) + "%</font>"
+        str += "<font color=\"warning\">" + roundRatingValue(condition.Value) + "</font>"
     }
     str += "\n"
     return str
@@ -130,7 +138,7 @@ func ratingValueAppender(title string, condition SonarPayloadQualityGateConditio
 
 func roundRatingValue(value string) string {
     floatValue, _ := strconv.ParseFloat(value, 64)
-    return fmt.Sprintf("%.1f", floatValue)
+    return fmt.Sprintf("%.1f%%", floatValue)
 }
 
 func gradeAppender(title string, condition SonarPayloadQualityGateCondition) string {
