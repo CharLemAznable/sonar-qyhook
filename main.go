@@ -7,6 +7,7 @@ import (
 
 func main() {
     mux := http.NewServeMux()
+    HandleFunc(mux, "/", EmptyHandler)
     HandleFunc(mux, "/qyhook", qyhook)
     HandleFunc(mux, "/badge", badge, GzipResponseDisabled)
     server := http.Server{Addr: ":" + StrFromInt(appConfig.Port), Handler: mux}
