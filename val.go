@@ -7,16 +7,18 @@ import (
 const SonarProjectKeyHeaderName = "X-SonarQube-Project"
 
 type MetricAppender func(string, SonarPayloadQualityGateCondition) string
-type MetricValueParser func(string) string
+type MetricValueParser func(string, string) string
 type MetricColorMapper func(string) string
 
 var SonarMetricNameArray []string
 var SonarMetricTitleMap map[string]string
 var SonarMetricAppenderMap map[string]MetricAppender
 var SonarMetricLabelMap map[string]string
-var SonarMetricJsonPathMap map[string]string
+var SonarMetricStatusJsonPathMap map[string]string
+var SonarMetricStatusMapper func(s string) string
+var SonarMetricValueJsonPathMap map[string]string
 var SonarMetricValueParserMap map[string]MetricValueParser
-var SonarMetricColorMapperMap map[string]MetricColorMapper
+var SonarMetricValueColorMapperMap map[string]MetricColorMapper
 
 func init() {
     SonarMetricNameArray = []string{
@@ -69,9 +71,24 @@ func init() {
         "duplicated_lines_density":     "重复行",
         "new_duplicated_lines_density": "新代码重复行",
     }
-    SonarMetricJsonPathMap = map[string]string{
+    SonarMetricStatusJsonPathMap = map[string]string{
         "analysis_status":              "status",
         "quality_gate":                 "qualityGate.status",
+        "reliability_rating":           "qualityGate.conditions.#(metric==\"reliability_rating\").status",
+        "new_reliability_rating":       "qualityGate.conditions.#(metric==\"new_reliability_rating\").status",
+        "security_rating":              "qualityGate.conditions.#(metric==\"security_rating\").status",
+        "new_security_rating":          "qualityGate.conditions.#(metric==\"new_security_rating\").status",
+        "sqale_rating":                 "qualityGate.conditions.#(metric==\"sqale_rating\").status",
+        "new_maintainability_rating":   "qualityGate.conditions.#(metric==\"new_maintainability_rating\").status",
+        "coverage":                     "qualityGate.conditions.#(metric==\"coverage\").status",
+        "new_coverage":                 "qualityGate.conditions.#(metric==\"new_coverage\").status",
+        "duplicated_lines_density":     "qualityGate.conditions.#(metric==\"duplicated_lines_density\").status",
+        "new_duplicated_lines_density": "qualityGate.conditions.#(metric==\"new_duplicated_lines_density\").status",
+    }
+    SonarMetricStatusMapper = func(s string) string {
+        return gokits.Condition("SUCCESS" == s || "OK" == s, "brightgreen", "lightgray").(string)
+    }
+    SonarMetricValueJsonPathMap = map[string]string{
         "reliability_rating":           "qualityGate.conditions.#(metric==\"reliability_rating\").value",
         "new_reliability_rating":       "qualityGate.conditions.#(metric==\"new_reliability_rating\").value",
         "security_rating":              "qualityGate.conditions.#(metric==\"security_rating\").value",
@@ -84,21 +101,16 @@ func init() {
         "new_duplicated_lines_density": "qualityGate.conditions.#(metric==\"new_duplicated_lines_density\").value",
     }
     SonarMetricValueParserMap = map[string]MetricValueParser{
-        "analysis_status":              func(s string) string { return s },
-        "quality_gate":                 func(s string) string { return s },
-        "reliability_rating":           parseRatingValueToGrade,
-        "new_reliability_rating":       parseRatingValueToGrade,
-        "security_rating":              parseRatingValueToGrade,
-        "new_security_rating":          parseRatingValueToGrade,
-        "sqale_rating":                 parseRatingValueToGrade,
-        "new_maintainability_rating":   parseRatingValueToGrade,
-        "coverage":                     roundRatingValue,
-        "new_coverage":                 roundRatingValue,
-        "duplicated_lines_density":     roundRatingValue,
-        "new_duplicated_lines_density": roundRatingValue,
-    }
-    statusMapper := func(s string) string {
-        return gokits.Condition("SUCCESS" == s || "OK" == s, "brightgreen", "lightgray").(string)
+        "reliability_rating":           gradeParser,
+        "new_reliability_rating":       gradeParser,
+        "security_rating":              gradeParser,
+        "new_security_rating":          gradeParser,
+        "sqale_rating":                 gradeParser,
+        "new_maintainability_rating":   gradeParser,
+        "coverage":                     ratingValueParser,
+        "new_coverage":                 ratingValueParser,
+        "duplicated_lines_density":     ratingValueParser,
+        "new_duplicated_lines_density": ratingValueParser,
     }
     gradeMapper := func(s string) string {
         if "A" == s {
@@ -115,19 +127,12 @@ func init() {
             return "lightgray"
         }
     }
-    ratingMapper := func(s string) string { return "lightgray" }
-    SonarMetricColorMapperMap = map[string]MetricColorMapper{
-        "analysis_status":              statusMapper,
-        "quality_gate":                 statusMapper,
-        "reliability_rating":           gradeMapper,
-        "new_reliability_rating":       gradeMapper,
-        "security_rating":              gradeMapper,
-        "new_security_rating":          gradeMapper,
-        "sqale_rating":                 gradeMapper,
-        "new_maintainability_rating":   gradeMapper,
-        "coverage":                     ratingMapper,
-        "new_coverage":                 ratingMapper,
-        "duplicated_lines_density":     ratingMapper,
-        "new_duplicated_lines_density": ratingMapper,
+    SonarMetricValueColorMapperMap = map[string]MetricColorMapper{
+        "reliability_rating":         gradeMapper,
+        "new_reliability_rating":     gradeMapper,
+        "security_rating":            gradeMapper,
+        "new_security_rating":        gradeMapper,
+        "sqale_rating":               gradeMapper,
+        "new_maintainability_rating": gradeMapper,
     }
 }

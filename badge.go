@@ -82,18 +82,33 @@ func readRequestBadgeInfo(request *http.Request) (*BadgeInfo, error) {
             badgeInfo.MetricColor = "red"
             return nil
         }
-        path, ok := SonarMetricJsonPathMap[badgeInfo.Metric]
+        statusPath, ok := SonarMetricStatusJsonPathMap[badgeInfo.Metric]
         if !ok {
             badgeInfo.MetricValue = "unknown"
             badgeInfo.MetricColor = "lightgray"
             return nil
         }
+        status := gjson.Get(payloadValue, statusPath)
+        if status.Exists() {
+            badgeInfo.MetricValue = status.String()
+            badgeInfo.MetricColor = SonarMetricStatusMapper(status.String())
+        } else {
+            badgeInfo.MetricValue = "unknown"
+            badgeInfo.MetricColor = "lightgray"
+            return nil
+        }
+        path, ok := SonarMetricValueJsonPathMap[badgeInfo.Metric]
+        if !ok {
+            return nil // no further value should be parsed
+        }
         parser := SonarMetricValueParserMap[badgeInfo.Metric]
-        mapper := SonarMetricColorMapperMap[badgeInfo.Metric]
+        mapper, ok := SonarMetricValueColorMapperMap[badgeInfo.Metric]
         value := gjson.Get(payloadValue, path)
         if value.Exists() {
-            badgeInfo.MetricValue = parser(value.String())
-            badgeInfo.MetricColor = mapper(badgeInfo.MetricValue)
+            badgeInfo.MetricValue = parser(status.String(), value.String())
+            if ok {
+                badgeInfo.MetricColor = mapper(badgeInfo.MetricValue)
+            }
         } else {
             badgeInfo.MetricValue = "unknown"
             badgeInfo.MetricColor = "lightgray"

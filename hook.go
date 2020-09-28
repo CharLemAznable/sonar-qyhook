@@ -136,6 +136,14 @@ func ratingValueAppender(title string, condition SonarPayloadQualityGateConditio
     return str
 }
 
+func ratingValueParser(status string, value string) string {
+    if "NO_VALUE" == status {
+        return "-"
+    } else {
+        return roundRatingValue(value)
+    }
+}
+
 func roundRatingValue(value string) string {
     floatValue, _ := strconv.ParseFloat(value, 64)
     return fmt.Sprintf("%.1f%%", floatValue)
@@ -152,6 +160,14 @@ func gradeAppender(title string, condition SonarPayloadQualityGateCondition) str
     }
     str += "\n"
     return str
+}
+
+func gradeParser(status string, value string) string {
+    if "NO_VALUE" == status {
+        return "-"
+    } else {
+        return parseRatingValueToGrade(value)
+    }
 }
 
 func parseRatingValueToGrade(value string) string {
