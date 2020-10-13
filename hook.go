@@ -94,6 +94,8 @@ func buildMsg(projectKey string, payload *SonarPayload) string {
     msg += "> 质量阈: "
     if "OK" == payload.QualityGate.Status {
         msg += "<font color=\"info\">正常</font>"
+    } else if "WARN" == payload.QualityGate.Status {
+        msg += "<font color=\"warning\">警告</font>"
     } else {
         msg += "<font color=\"warning\">错误</font>"
     }
