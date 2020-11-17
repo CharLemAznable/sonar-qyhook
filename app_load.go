@@ -76,7 +76,7 @@ func fixedConfig(config *Config) {
         config.ShieldsBadgeUrl = DefaultShieldsProxyURL
     })
 
-    gokits.GlobalHttpServerConfig = (*gokits.HttpServerConfig)(unsafe.Pointer(&config))
+    gokits.GlobalHttpServerConfig = (*gokits.HttpServerConfig)(unsafe.Pointer(config))
 
     golog.SetLevel(config.LogLevel)
     golog.Infof("config: %+v", *config)
