@@ -11,11 +11,11 @@ func sendQyMessage(msg string) {
         "toparty":  "@all",
         "totag":    "@all",
         "msgtype":  "markdown",
-        "agentid":  appConfig.QyWxAgentId,
+        "agentid":  globalConfig.QyWxAgentId,
         "safe":     0,
         "markdown": map[string]string{"content": msg},
     }
-    _, _ = varys.WechatCorp(appConfig.QyWxAgentId, "/message/send").
+    _, _ = varys.WechatCorp(globalConfig.QyWxAgentId, "/message/send").
         Prop("Content-Type", "application/json;charset=utf-8").
         RequestBody(gokits.Json(qyWxMsg)).Post()
 }

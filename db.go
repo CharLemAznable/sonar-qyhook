@@ -2,7 +2,7 @@ package main
 
 import (
     "fmt"
-    "github.com/CharLemAznable/gokits"
+    "github.com/kataras/golog"
     "go.etcd.io/bbolt"
 )
 
@@ -13,7 +13,8 @@ const PayloadBucket = "Payload"
 func init() {
     _db, err := bbolt.Open("./sonar.db", 0666, nil)
     if err != nil {
-        gokits.LOG.Crashf("DB create error: %s", err.Error())
+        golog.Errorf("DB create error: %s", err.Error())
+        panic("DB create error")
     }
     db = _db
 
@@ -25,6 +26,7 @@ func init() {
         return nil
     })
     if err != nil {
-        gokits.LOG.Crashf("DB init error: %s", err.Error())
+        golog.Errorf("DB init error: %s", err.Error())
+        panic("DB init error")
     }
 }

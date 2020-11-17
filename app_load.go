@@ -5,6 +5,7 @@ import (
     "github.com/BurntSushi/toml"
     "github.com/CharLemAznable/gokits"
     "github.com/CharLemAznable/varys-go-driver"
+    "github.com/kataras/golog"
     "net/http/httputil"
     "net/url"
     "regexp"
@@ -12,57 +13,79 @@ import (
     "unsafe"
 )
 
-type AppConfig struct {
+type Config struct {
     gokits.HttpServerConfig
-    VarysBaseUrl      string
-    QyWxAgentId       string
+
+    LogLevel string
+
+    VarysBaseUrl string
+    QyWxAgentId  string
+
     ProjectKeyPattern string
-    ShieldsBadgeUrl   string
+
+    ShieldsBadgeUrl string
 }
 
-var appConfig AppConfig
-var _configFile string
+var globalConfig = &Config{}
 var projectKeyRegexp *regexp.Regexp
 var shieldsProxy *httputil.ReverseProxy
 
+const DefaultShieldsProxyURL = "https://img.shields.io/static/v1"
+
 func init() {
-    gokits.LOG.LoadConfiguration("logback.xml")
-
-    flag.StringVar(&_configFile, "configFile", "appConfig.toml", "config file path")
+    configFile := ""
+    flag.StringVar(&configFile, "configFile",
+        "config.toml", "config file path")
     flag.Parse()
-
-    if _, err := toml.DecodeFile(_configFile, &appConfig); err != nil {
-        gokits.LOG.Crashf("config file decode error: %s", err.Error())
+    if _, err := toml.DecodeFile(configFile, globalConfig); err != nil {
+        golog.Errorf("config file decode error: %s", err.Error())
     }
 
-    gokits.If(0 == appConfig.Port, func() {
-        appConfig.Port = 17258
+    fixedConfig(globalConfig)
+    projectKeyRegexp = regexp.MustCompile(globalConfig.ProjectKeyPattern)
+    shieldsProxy = buildShieldsProxy(globalConfig)
+}
+
+func fixedConfig(config *Config) {
+    gokits.If(0 == config.Port, func() {
+        config.Port = 17258
     })
-    gokits.If(0 != len(appConfig.ContextPath), func() {
-        gokits.Unless(strings.HasPrefix(appConfig.ContextPath, "/"),
-            func() { appConfig.ContextPath = "/" + appConfig.ContextPath })
-        gokits.If(strings.HasSuffix(appConfig.ContextPath, "/"),
-            func() { appConfig.ContextPath = appConfig.ContextPath[:len(appConfig.ContextPath)-1] })
+    gokits.If("" == config.ContextPath, func() {
+        gokits.Unless(strings.HasPrefix(config.ContextPath, "/"),
+            func() { config.ContextPath = "/" + config.ContextPath })
+        gokits.If(strings.HasSuffix(config.ContextPath, "/"),
+            func() { config.ContextPath = config.ContextPath[:len(config.ContextPath)-1] })
     })
-    gokits.Unless("" == appConfig.VarysBaseUrl, func() {
-        varys.ConfigInstance.Address = appConfig.VarysBaseUrl
+    gokits.If("" == config.LogLevel, func() {
+        config.LogLevel = "info"
     })
-    gokits.If("" == appConfig.QyWxAgentId, func() {
-        gokits.LOG.Crashf("QyWxAgentId config REQUIRED")
+
+    gokits.Unless("" == config.VarysBaseUrl, func() {
+        varys.ConfigInstance.Address = config.VarysBaseUrl
     })
-    gokits.If("" == appConfig.ProjectKeyPattern, func() {
-        appConfig.ProjectKeyPattern = "^.*$"
+    gokits.If("" == config.QyWxAgentId, func() {
+        golog.Error("QyWxAgentId config REQUIRED")
+        panic("QyWxAgentId config REQUIRED")
     })
-    projectKeyRegexp = regexp.MustCompile(appConfig.ProjectKeyPattern)
-    gokits.If("" == appConfig.ShieldsBadgeUrl, func() {
-        appConfig.ShieldsBadgeUrl = "https://img.shields.io/static/v1"
+
+    gokits.If("" == config.ProjectKeyPattern, func() {
+        config.ProjectKeyPattern = "^.*$"
     })
-    badgeUrl, err := url.Parse(appConfig.ShieldsBadgeUrl)
+
+    gokits.If("" == config.ShieldsBadgeUrl, func() {
+        config.ShieldsBadgeUrl = DefaultShieldsProxyURL
+    })
+
+    gokits.GlobalHttpServerConfig = (*gokits.HttpServerConfig)(unsafe.Pointer(&config))
+
+    golog.SetLevel(config.LogLevel)
+    golog.Infof("config: %+v", *config)
+}
+
+func buildShieldsProxy(config *Config) *httputil.ReverseProxy {
+    badgeUrl, err := url.Parse(config.ShieldsBadgeUrl)
     if err != nil {
-        badgeUrl, _ = url.Parse("https://img.shields.io/static/v1")
+        badgeUrl, _ = url.Parse(DefaultShieldsProxyURL)
     }
-    shieldsProxy = gokits.ReverseProxy(badgeUrl)
-
-    gokits.GlobalHttpServerConfig = (*gokits.HttpServerConfig)(unsafe.Pointer(&appConfig))
-    gokits.LOG.Debug("appConfig: %s", gokits.Json(appConfig))
+    return gokits.ReverseProxy(badgeUrl)
 }

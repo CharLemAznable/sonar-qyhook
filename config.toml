@@ -1,0 +1,10 @@
+Port = 17258
+ContextPath = ""
+LogLevel = "info"
+
+VarysBaseUrl = ""
+QyWxAgentId = ""
+
+ProjectKeyPattern = "^.*$"
+
+ShieldsBadgeUrl = "https://img.shields.io/static/v1"

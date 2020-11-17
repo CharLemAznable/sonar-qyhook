@@ -9,32 +9,19 @@ SonarQube项目分析后回调Webhook服务, 将分析结果转发为企业微�
 
 #### 配置文件
 
-1. ```appConfig.toml```
+```config.toml``` [示例](https://github.com/CharLemAznable/sonar-qyhook/blob/master/config.toml)
 
 ```toml
 Port = 17258
 ContextPath = ""
+LogLevel = "info"
+
 VarysBaseUrl = ""       # varys服务地址
 QyWxAgentId = ""        # 企业微信应用ID, 即varys配置的企业应用codeName
-ProjectKeyPattern = ""  # 按正则匹配需要发送消息的Sonar项目名称
-```
 
-2. ```logback.xml```
+ProjectKeyPattern = ""  # 按正则匹配需要发送消息的Sonar项目名称, 默认为: "^.*$"
 
-```xml
-<logging>
-    <filter enabled="true">
-        <tag>file</tag>
-        <type>file</type>
-        <level>INFO</level>
-        <property name="filename">sonar-qyhook.log</property>
-        <property name="format">[%D %T] [%L] (%S) %M</property>
-        <property name="rotate">false</property>
-        <property name="maxsize">0M</property>
-        <property name="maxlines">0K</property>
-        <property name="daily">false</property>
-    </filter>
-</logging>
+ShieldsBadgeUrl = ""    # 徽章反向代理地址, 默认为: "https://img.shields.io/static/v1"
 ```
 
 #### 部署执行
