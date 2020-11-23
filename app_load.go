@@ -50,7 +50,7 @@ func fixedConfig(config *Config) {
     gokits.If(0 == config.Port, func() {
         config.Port = 17258
     })
-    gokits.If("" == config.ContextPath, func() {
+    gokits.If("" != config.ContextPath, func() {
         gokits.Unless(strings.HasPrefix(config.ContextPath, "/"),
             func() { config.ContextPath = "/" + config.ContextPath })
         gokits.If(strings.HasSuffix(config.ContextPath, "/"),

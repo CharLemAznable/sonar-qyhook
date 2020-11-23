@@ -15,7 +15,7 @@ func sendQyMessage(msg string) {
         "safe":     0,
         "markdown": map[string]string{"content": msg},
     }
-    _, _ = varys.WechatCorp(globalConfig.QyWxAgentId, "/message/send").
+    _, _ = varys.WechatCorp(globalConfig.QyWxAgentId, "/cgi-bin/message/send").
         Prop("Content-Type", "application/json;charset=utf-8").
         RequestBody(gokits.Json(qyWxMsg)).Post()
 }
