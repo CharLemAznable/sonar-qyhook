@@ -10,7 +10,6 @@ import (
     "net/url"
     "regexp"
     "strings"
-    "unsafe"
 )
 
 type Config struct {
@@ -76,7 +75,7 @@ func fixedConfig(config *Config) {
         config.ShieldsBadgeUrl = DefaultShieldsProxyURL
     })
 
-    gokits.GlobalHttpServerConfig = (*gokits.HttpServerConfig)(unsafe.Pointer(config))
+    gokits.GlobalHttpServerConfig = &config.HttpServerConfig
 
     golog.SetLevel(config.LogLevel)
     golog.Infof("config: %+v", *config)
